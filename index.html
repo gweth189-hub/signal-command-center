@@ -1,0 +1,714 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090713">
+  <title>SIGNAL — Personal Command Center</title>
+
+  <style>
+    :root {
+      --bg: #090713;
+      --panel: #141020;
+      --panel2: #1b152a;
+      --line: #302443;
+      --purple: #a78bfa;
+      --bright: #c4b5fd;
+      --muted: #a39ab6;
+      --text: #f5f0ff;
+      --green: #7ee7bc;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 75% 0%, #291747 0%, transparent 38%),
+        var(--bg);
+      color: var(--text);
+      font: 15px/1.5 Inter, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 225px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      padding: 30px 18px;
+      border-right: 1px solid var(--line);
+      background: #0c0915d9;
+    }
+
+    .logo {
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: 5px;
+      margin: 4px 10px 5px;
+    }
+
+    .logo span { color: var(--purple); }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    aside .eyebrow { margin: 0 10px 35px; }
+
+    .nav-label {
+      margin: 26px 10px 10px;
+      color: #776d8c;
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    .nav-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 5px 0;
+    }
+
+    .nav-item.active, .nav-item:hover {
+      background: #251b38;
+      border-color: #403055;
+      color: white;
+    }
+
+    .side-card {
+      margin-top: 55px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 15px;
+      background: linear-gradient(145deg, #211532, #100d1b);
+    }
+
+    .side-card strong { color: var(--bright); }
+
+    main {
+      padding: 35px clamp(18px, 4vw, 52px);
+      max-width: 1500px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 35px;
+    }
+
+    .online {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    #clock {
+      font: 600 14px ui-monospace, monospace;
+      color: var(--bright);
+    }
+
+    h1 {
+      font-size: clamp(35px, 5vw, 59px);
+      line-height: 1.06;
+      letter-spacing: -2px;
+      margin: 12px 0;
+    }
+
+    h1 span {
+      color: var(--purple);
+      text-shadow: 0 0 35px #a78bfa35;
+    }
+
+    .muted { color: var(--muted); }
+
+    .hero {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .hero p { max-width: 500px; }
+
+    .date-chip {
+      border: 1px solid var(--line);
+      background: #171124;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--bright);
+      font-size: 12px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #191328, #100d1a);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 22px;
+      min-width: 0;
+      box-shadow: 0 12px 35px #00000013;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .card:hover {
+      border-color: #72539c;
+      transform: translateY(-2px);
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 750;
+      margin: 13px 0 2px;
+      letter-spacing: -1px;
+    }
+
+    .stat-icon { color: var(--purple); font-size: 20px; }
+
+    .columns {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, .85fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    h2 { font-size: 17px; margin: 0; }
+
+    .badge {
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--bright);
+      background: #302143;
+      padding: 6px 9px;
+      border-radius: 7px;
+    }
+
+    form { display: flex; gap: 9px; }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      color: white;
+      background: #0b0913;
+      border: 1px solid #3b2e4e;
+      border-radius: 10px;
+      padding: 12px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px #a78bfa16;
+    }
+
+    .primary {
+      color: #130c20;
+      font-weight: 750;
+      background: linear-gradient(135deg, #c4b5fd, #9570ef);
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 15px;
+      white-space: nowrap;
+      transition: filter .2s, transform .2s;
+    }
+
+    .primary:hover { filter: brightness(1.12); transform: translateY(-1px); }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 18px 0 0;
+    }
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 13px 0;
+      border-bottom: 1px solid #292034;
+    }
+
+    .task:last-child { border-bottom: 0; }
+
+    .task input[type="checkbox"] {
+      accent-color: var(--purple);
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+    }
+
+    .task-name { flex: 1; overflow-wrap: anywhere; }
+
+    .task.done .task-name {
+      text-decoration: line-through;
+      color: #81778f;
+    }
+
+    .delete {
+      border: 0;
+      background: transparent;
+      color: #82758f;
+      padding: 5px;
+    }
+
+    .delete:hover { color: #ff91a8; }
+
+    .empty {
+      text-align: center;
+      padding: 22px 5px;
+      color: #8f849f;
+      font-size: 13px;
+    }
+
+    .timer {
+      text-align: center;
+      padding: 8px 0 12px;
+    }
+
+    .timer-ring {
+      width: 175px;
+      height: 175px;
+      border-radius: 50%;
+      margin: 18px auto;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--purple) var(--angle, 0deg), #30243f 0deg);
+      box-shadow: 0 0 45px #8b5cf620;
+      position: relative;
+    }
+
+    .timer-ring::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      background: #151020;
+      border: 1px solid #302443;
+    }
+
+    #timerDisplay {
+      z-index: 1;
+      font-size: 36px;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .secondary {
+      color: var(--bright);
+      background: #261b36;
+      border: 1px solid #49355e;
+      border-radius: 10px;
+      padding: 11px 16px;
+    }
+
+    .secondary:hover { background: #352448; }
+
+    .progress-track {
+      height: 7px;
+      background: #2b2237;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 9px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #8b5cf6, #c4b5fd);
+      transition: width .3s;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      gap: 10px;
+    }
+
+    .footer {
+      color: #70667e;
+      text-align: center;
+      font-size: 11px;
+      margin-top: 30px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 850px) {
+      .layout { grid-template-columns: 1fr; }
+      aside {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding: 18px;
+      }
+      aside .eyebrow, .nav-label, .nav-item, .side-card { display: none; }
+      .logo { margin: 0; }
+      main { padding-top: 24px; }
+    }
+
+    @media (max-width: 650px) {
+      .stats { grid-template-columns: 1fr; }
+      .columns { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+      .hero { margin-bottom: 24px; }
+      form { flex-direction: column; }
+      h1 { letter-spacing: -1px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside>
+      <div class="logo">SIG<span>N</span>AL.</div>
+      <p class="eyebrow">Personal command center</p>
+
+      <p class="nav-label">WORKSPACE</p>
+      <button class="nav-item active" data-target="overview">◈ &nbsp; Overview</button>
+      <button class="nav-item" data-target="priorities">◎ &nbsp; Priorities</button>
+      <button class="nav-item" data-target="focus">◷ &nbsp; Focus mode</button>
+
+      <div class="side-card">
+        <p class="eyebrow">DAILY DIRECTIVE</p>
+        <strong>Progress over perfection.</strong>
+        <p class="muted">One focused step at a time.</p>
+      </div>
+    </aside>
+
+    <main id="overview">
+      <header class="topbar">
+        <span class="online"><span class="dot"></span> ALL SYSTEMS OPERATIONAL</span>
+        <time id="clock">--:--:--</time>
+      </header>
+
+      <section class="hero">
+        <div>
+          <p class="eyebrow">YOUR PERSONAL DASHBOARD / 001</p>
+          <h1>Own your <span>direction.</span></h1>
+          <p class="muted">Less noise. Clear priorities. Meaningful progress. Welcome to your personal command center.</p>
+        </div>
+        <div class="date-chip" id="today">Loading date...</div>
+      </section>
+
+      <section class="stats">
+        <article class="card">
+          <span class="stat-icon">◎</span>
+          <p class="muted">Total priorities</p>
+          <div class="stat-number" id="totalTasks">0</div>
+          <span class="muted">Tasks in your system</span>
+        </article>
+
+        <article class="card">
+          <span class="stat-icon">✦</span>
+          <p class="muted">Completed</p>
+          <div class="stat-number" id="doneTasks">0</div>
+          <span class="muted">Steps forward</span>
+        </article>
+
+        <article class="card">
+          <span class="stat-icon">◷</span>
+          <p class="muted">Focus sessions</p>
+          <div class="stat-number" id="sessions">0</div>
+          <span class="muted">Sessions completed</span>
+        </article>
+      </section>
+
+      <section class="columns">
+        <article class="card" id="priorities">
+          <div class="section-head">
+            <h2>Priority scanner</h2>
+            <span class="badge">TASK MANAGER</span>
+          </div>
+          <p class="muted">Identify your next meaningful move.</p>
+
+          <form id="taskForm">
+            <input id="taskInput" maxlength="100" placeholder="What needs to get done?" required>
+            <button class="primary" type="submit">+ Add task</button>
+          </form>
+
+          <ul class="task-list" id="taskList"></ul>
+
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-label">
+            <span>Daily completion</span>
+            <span id="progressText">0%</span>
+          </div>
+        </article>
+
+        <article class="card" id="focus">
+          <div class="section-head">
+            <h2>Focus reactor</h2>
+            <span class="badge">DEEP WORK</span>
+          </div>
+          <p class="muted">Give one task your full attention.</p>
+
+          <div class="timer">
+            <div class="timer-ring" id="timerRing">
+              <span id="timerDisplay">25:00</span>
+            </div>
+            <p class="muted" id="timerStatus">Ready when you are.</p>
+            <div class="timer-controls">
+              <button class="primary" id="startTimer">Start focus</button>
+              <button class="secondary" id="resetTimer">Reset</button>
+            </div>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-fill" id="focusFill"></div>
+          </div>
+          <div class="progress-label">
+            <span>Current session</span>
+            <span id="focusPercent">0%</span>
+          </div>
+        </article>
+      </section>
+
+      <p class="footer">SIGNAL v2.0 &nbsp; • &nbsp; BUILT FOR PROGRESS</p>
+    </main>
+  </div>
+
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+
+    let tasks = [];
+    let sessions = 0;
+    let remaining = 25 * 60;
+    let timerId = null;
+    let endTime = null;
+    const duration = 25 * 60;
+
+    try {
+      tasks = JSON.parse(localStorage.getItem("signal-tasks")) || [];
+      sessions = Number(localStorage.getItem("signal-sessions")) || 0;
+    } catch {
+      tasks = [];
+      sessions = 0;
+    }
+
+    function saveData() {
+      try {
+        localStorage.setItem("signal-tasks", JSON.stringify(tasks));
+        localStorage.setItem("signal-sessions", String(sessions));
+      } catch {
+        $("#timerStatus").textContent = "Browser storage unavailable; changes may not persist.";
+      }
+    }
+
+    function updateClock() {
+      const now = new Date();
+      $("#clock").textContent = now.toLocaleTimeString([], {
+        hour: "2-digit", minute: "2-digit", second: "2-digit"
+      });
+      $("#today").textContent = now.toLocaleDateString([], {
+        weekday: "short", day: "numeric", month: "short", year: "numeric"
+      });
+    }
+
+    function renderTasks() {
+      const list = $("#taskList");
+      list.replaceChildren();
+
+      if (tasks.length === 0) {
+        const empty = document.createElement("li");
+        empty.className = "empty";
+        empty.textContent = "No priorities yet. Add your first task above.";
+        list.appendChild(empty);
+      }
+
+      tasks.forEach((task) => {
+        const item = document.createElement("li");
+        item.className = "task" + (task.done ? " done" : "");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = task.done;
+        checkbox.setAttribute("aria-label", "Complete " + task.name);
+        checkbox.addEventListener("change", () => {
+          task.done = checkbox.checked;
+          saveData();
+          renderTasks();
+        });
+
+        const name = document.createElement("span");
+        name.className = "task-name";
+        name.textContent = task.name;
+
+        const remove = document.createElement("button");
+        remove.className = "delete";
+        remove.textContent = "✕";
+        remove.setAttribute("aria-label", "Delete " + task.name);
+        remove.addEventListener("click", () => {
+          tasks = tasks.filter((entry) => entry.id !== task.id);
+          saveData();
+          renderTasks();
+        });
+
+        item.append(checkbox, name, remove);
+        list.appendChild(item);
+      });
+
+      const completed = tasks.filter((task) => task.done).length;
+      const percent = tasks.length ? Math.round(completed / tasks.length * 100) : 0;
+
+      $("#totalTasks").textContent = tasks.length;
+      $("#doneTasks").textContent = completed;
+      $("#sessions").textContent = sessions;
+      $("#progressFill").style.width = percent + "%";
+      $("#progressText").textContent = percent + "%";
+    }
+
+    $("#taskForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = $("#taskInput").value.trim();
+      if (!name) return;
+
+      tasks.push({
+        id: Date.now() + Math.random(),
+        name,
+        done: false
+      });
+
+      $("#taskInput").value = "";
+      saveData();
+      renderTasks();
+      $("#taskInput").focus();
+    });
+
+    function updateTimer() {
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+      $("#timerDisplay").textContent =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+
+      const elapsed = duration - remaining;
+      const percent = Math.round(elapsed / duration * 100);
+      $("#focusFill").style.width = percent + "%";
+      $("#focusPercent").textContent = percent + "%";
+      $("#timerRing").style.setProperty("--angle", percent * 3.6 + "deg");
+    }
+
+    function stopTimer() {
+      if (timerId !== null) clearInterval(timerId);
+      timerId = null;
+      endTime = null;
+      $("#startTimer").textContent = "Resume focus";
+    }
+
+    $("#startTimer").addEventListener("click", () => {
+      if (timerId !== null) {
+        stopTimer();
+        $("#timerStatus").textContent = "Session paused.";
+        return;
+      }
+
+      if (remaining <= 0) remaining = duration;
+      endTime = Date.now() + remaining * 1000;
+      $("#startTimer").textContent = "Pause";
+      $("#timerStatus").textContent = "Stay focused. You've got this.";
+
+      timerId = setInterval(() => {
+        remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+        updateTimer();
+
+        if (remaining <= 0) {
+          stopTimer();
+          sessions++;
+          saveData();
+          renderTasks();
+          $("#timerStatus").textContent = "Focus session complete. Take a short break!";
+          $("#startTimer").textContent = "Start next session";
+          updateTimer();
+        }
+      }, 250);
+    });
+
+    $("#resetTimer").addEventListener("click", () => {
+      stopTimer();
+      remaining = duration;
+      updateTimer();
+      $("#timerStatus").textContent = "Timer reset. Ready when you are.";
+      $("#startTimer").textContent = "Start focus";
+    });
+
+    document.querySelectorAll(".nav-item").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".nav-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+        button.classList.add("active");
+        document.getElementById(button.dataset.target).scrollIntoView({
+          behavior: "smooth", block: "start"
+        });
+      });
+    });
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    renderTasks();
+    updateTimer();
+  </script>
+</body>
+</html>
