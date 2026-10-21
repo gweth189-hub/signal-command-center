@@ -2,713 +2,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090713">
-  <title>SIGNAL — Personal Command Center</title>
-
-  <style>
-    :root {
-      --bg: #090713;
-      --panel: #141020;
-      --panel2: #1b152a;
-      --line: #302443;
-      --purple: #a78bfa;
-      --bright: #c4b5fd;
-      --muted: #a39ab6;
-      --text: #f5f0ff;
-      --green: #7ee7bc;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background:
-        radial-gradient(ellipse at 75% 0%, #291747 0%, transparent 38%),
-        var(--bg);
-      color: var(--text);
-      font: 15px/1.5 Inter, "Segoe UI", sans-serif;
-      min-height: 100vh;
-    }
-
-    button, input, select { font: inherit; }
-    button { cursor: pointer; }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 225px minmax(0, 1fr);
-      min-height: 100vh;
-    }
-
-    aside {
-      padding: 30px 18px;
-      border-right: 1px solid var(--line);
-      background: #0c0915d9;
-    }
-
-    .logo {
-      font-size: 23px;
-      font-weight: 900;
-      letter-spacing: 5px;
-      margin: 4px 10px 5px;
-    }
-
-    .logo span { color: var(--purple); }
-
-    .eyebrow {
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    aside .eyebrow { margin: 0 10px 35px; }
-
-    .nav-label {
-      margin: 26px 10px 10px;
-      color: #776d8c;
-      font-size: 10px;
-      letter-spacing: 2px;
-    }
-
-    .nav-item {
-      display: block;
-      width: 100%;
-      text-align: left;
-      color: var(--muted);
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 10px;
-      padding: 12px;
-      margin: 5px 0;
-    }
-
-    .nav-item.active, .nav-item:hover {
-      background: #251b38;
-      border-color: #403055;
-      color: white;
-    }
-
-    .side-card {
-      margin-top: 55px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 15px;
-      background: linear-gradient(145deg, #211532, #100d1b);
-    }
-
-    .side-card strong { color: var(--bright); }
-
-    main {
-      padding: 35px clamp(18px, 4vw, 52px);
-      max-width: 1500px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 35px;
-    }
-
-    .online {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--green);
-      font-size: 12px;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 12px var(--green);
-    }
-
-    #clock {
-      font: 600 14px ui-monospace, monospace;
-      color: var(--bright);
-    }
-
-    h1 {
-      font-size: clamp(35px, 5vw, 59px);
-      line-height: 1.06;
-      letter-spacing: -2px;
-      margin: 12px 0;
-    }
-
-    h1 span {
-      color: var(--purple);
-      text-shadow: 0 0 35px #a78bfa35;
-    }
-
-    .muted { color: var(--muted); }
-
-    .hero {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 24px;
-      flex-wrap: wrap;
-      margin-bottom: 32px;
-    }
-
-    .hero p { max-width: 500px; }
-
-    .date-chip {
-      border: 1px solid var(--line);
-      background: #171124;
-      padding: 12px 16px;
-      border-radius: 12px;
-      color: var(--bright);
-      font-size: 12px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 15px;
-      margin-bottom: 22px;
-    }
-
-    .card {
-      background: linear-gradient(145deg, #191328, #100d1a);
-      border: 1px solid var(--line);
-      border-radius: 17px;
-      padding: 22px;
-      min-width: 0;
-      box-shadow: 0 12px 35px #00000013;
-      transition: border-color .2s, transform .2s;
-    }
-
-    .card:hover {
-      border-color: #72539c;
-      transform: translateY(-2px);
-    }
-
-    .stat-number {
-      font-size: 32px;
-      font-weight: 750;
-      margin: 13px 0 2px;
-      letter-spacing: -1px;
-    }
-
-    .stat-icon { color: var(--purple); font-size: 20px; }
-
-    .columns {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(260px, .85fr);
-      gap: 20px;
-      align-items: start;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    h2 { font-size: 17px; margin: 0; }
-
-    .badge {
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: var(--bright);
-      background: #302143;
-      padding: 6px 9px;
-      border-radius: 7px;
-    }
-
-    form { display: flex; gap: 9px; }
-
-    input {
-      width: 100%;
-      min-width: 0;
-      color: white;
-      background: #0b0913;
-      border: 1px solid #3b2e4e;
-      border-radius: 10px;
-      padding: 12px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: var(--purple);
-      box-shadow: 0 0 0 3px #a78bfa16;
-    }
-
-    .primary {
-      color: #130c20;
-      font-weight: 750;
-      background: linear-gradient(135deg, #c4b5fd, #9570ef);
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 15px;
-      white-space: nowrap;
-      transition: filter .2s, transform .2s;
-    }
-
-    .primary:hover { filter: brightness(1.12); transform: translateY(-1px); }
-
-    .task-list {
-      list-style: none;
-      padding: 0;
-      margin: 18px 0 0;
-    }
-
-    .task {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 13px 0;
-      border-bottom: 1px solid #292034;
-    }
-
-    .task:last-child { border-bottom: 0; }
-
-    .task input[type="checkbox"] {
-      accent-color: var(--purple);
-      width: 17px;
-      height: 17px;
-      flex-shrink: 0;
-    }
-
-    .task-name { flex: 1; overflow-wrap: anywhere; }
-
-    .task.done .task-name {
-      text-decoration: line-through;
-      color: #81778f;
-    }
-
-    .delete {
-      border: 0;
-      background: transparent;
-      color: #82758f;
-      padding: 5px;
-    }
-
-    .delete:hover { color: #ff91a8; }
-
-    .empty {
-      text-align: center;
-      padding: 22px 5px;
-      color: #8f849f;
-      font-size: 13px;
-    }
-
-    .timer {
-      text-align: center;
-      padding: 8px 0 12px;
-    }
-
-    .timer-ring {
-      width: 175px;
-      height: 175px;
-      border-radius: 50%;
-      margin: 18px auto;
-      display: grid;
-      place-items: center;
-      background: conic-gradient(var(--purple) var(--angle, 0deg), #30243f 0deg);
-      box-shadow: 0 0 45px #8b5cf620;
-      position: relative;
-    }
-
-    .timer-ring::before {
-      content: "";
-      position: absolute;
-      inset: 8px;
-      border-radius: 50%;
-      background: #151020;
-      border: 1px solid #302443;
-    }
-
-    #timerDisplay {
-      z-index: 1;
-      font-size: 36px;
-      font-weight: 750;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .timer-controls {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .secondary {
-      color: var(--bright);
-      background: #261b36;
-      border: 1px solid #49355e;
-      border-radius: 10px;
-      padding: 11px 16px;
-    }
-
-    .secondary:hover { background: #352448; }
-
-    .progress-track {
-      height: 7px;
-      background: #2b2237;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 16px 0 9px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #8b5cf6, #c4b5fd);
-      transition: width .3s;
-    }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--muted);
-      gap: 10px;
-    }
-
-    .footer {
-      color: #70667e;
-      text-align: center;
-      font-size: 11px;
-      margin-top: 30px;
-      letter-spacing: 1px;
-    }
-
-    @media (max-width: 850px) {
-      .layout { grid-template-columns: 1fr; }
-      aside {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-        padding: 18px;
-      }
-      aside .eyebrow, .nav-label, .nav-item, .side-card { display: none; }
-      .logo { margin: 0; }
-      main { padding-top: 24px; }
-    }
-
-    @media (max-width: 650px) {
-      .stats { grid-template-columns: 1fr; }
-      .columns { grid-template-columns: 1fr; }
-      .card { padding: 18px; }
-      .hero { margin-bottom: 24px; }
-      form { flex-direction: column; }
-      h1 { letter-spacing: -1px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090713">
+<meta name="description" content="SIGNAL — a personal command center for tasks, focus and progress.">
+<title>SIGNAL — Personal Command Center</title>
+<style>
+:root{--bg:#090713;--panel:#141020;--panel2:#1c1530;--line:#302443;--purple:#a78bfa;--bright:#c4b5fd;--muted:#a39ab6;--text:#f5f0ff;--green:#7ee7bc;--red:#ff91a8;--gold:#f6ce79}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 75% 0%,#291747,transparent 38%),var(--bg);color:var(--text);font:15px/1.55 Inter,"Segoe UI",sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--purple);outline-offset:3px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+aside{padding:25px 17px;border-right:1px solid var(--line);background:#0c0915e8}
+.logo{font-size:23px;font-weight:900;letter-spacing:5px;margin:5px 10px}
+.logo span{color:var(--purple)}
+.eyebrow{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase}
+aside>.eyebrow{margin:0 10px 30px}
+.nav-label{margin:25px 10px 9px;color:#776d8c;font-size:10px;letter-spacing:2px}
+.nav-item{display:block;width:100%;text-align:left;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:10px;padding:11px;margin:4px 0}
+.nav-item.active,.nav-item:hover{background:var(--panel2);border-color:#403055;color:white}
+.side-card{margin-top:35px;border:1px solid var(--line);border-radius:14px;padding:15px;background:linear-gradient(145deg,#211532,#100d1b)}
+.side-card strong{color:var(--bright)}
+main{padding:30px clamp(15px,4vw,48px);max-width:1500px;width:100%;margin:auto}
+.topbar,.hero,.section-head,.progress-label{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar{margin-bottom:30px}
+.online{color:var(--green);font-size:11px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px}
+#clock{font:600 13px ui-monospace,monospace;color:var(--bright)}
+.hero{align-items:end;margin-bottom:28px}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.08;letter-spacing:-2px;margin:10px 0}
+h1 span{color:var(--purple);text-shadow:0 0 35px #a78bfa35}
+h2{font-size:17px;margin:0}
+h3{font-size:14px;margin:0 0 8px}
+p{margin-top:8px}
+.muted{color:var(--muted)}
+.date-chip,.badge{border:1px solid var(--line);background:var(--panel);padding:9px 12px;border-radius:10px;color:var(--bright);font-size:11px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.card{background:linear-gradient(145deg,#191328,#100d1a);border:1px solid var(--line);border-radius:16px;padding:19px;min-width:0;box-shadow:0 12px 35px #00000013;transition:border-color .2s}
+.card:hover{border-color:#72539c}
+.stat-number{font-size:30px;font-weight:750;letter-spacing:-1px;margin:8px 0 0}
+.stat-icon{color:var(--purple);font-size:19px}
+.columns{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.8fr);gap:17px;align-items:start}
+.stack{display:grid;gap:17px}
+.section-head{margin-bottom:13px}
+.badge{font-size:9px;letter-spacing:1px;padding:5px 8px}
+form{display:flex;gap:8px}
+input,select{width:100%;min-width:0;color:var(--text);background:#0b0913;border:1px solid #3b2e4e;border-radius:9px;padding:11px;outline:none}
+input:focus,select:focus{border-color:var(--purple)}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--purple)}
+.primary,.secondary,.danger{border-radius:9px;padding:10px 13px;white-space:nowrap}
+.primary{color:#130c20;font-weight:750;background:linear-gradient(135deg,#c4b5fd,#9570ef);border:0}
+.secondary{color:var(--bright);background:#261b36;border:1px solid #49355e}
+.danger{color:var(--red);background:#301724;border:1px solid #573044}
+button:hover{filter:brightness(1.12)}
+.controls{display:grid;grid-template-columns:1fr 150px;gap:8px;margin:12px 0}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.filters select{width:auto;flex:1;min-width:110px;padding:8px}
+.task-list{list-style:none;padding:0;margin:12px 0}
+.task{padding:13px 0;border-bottom:1px solid #292034}
+.task:last-child{border-bottom:0}
+.task-top{display:flex;align-items:flex-start;gap:10px}
+.task-top input{margin-top:4px}
+.task-body{flex:1;min-width:0}
+.task-name{overflow-wrap:anywhere;font-weight:550}
+.task.done .task-name{text-decoration:line-through;color:#81778f}
+.task-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;font-size:10px;color:var(--muted)}
+.priority{border-radius:5px;padding:2px 6px;background:#302143;color:var(--bright)}
+.priority.High{color:var(--red);background:#381a2a}
+.priority.Medium{color:var(--gold);background:#382c18}
+.priority.Low{color:var(--green);background:#143025}
+.task-actions{display:flex;gap:5px}
+.mini{border:1px solid var(--line);background:#20172d;color:var(--muted);border-radius:6px;padding:5px 8px;font-size:11px}
+.empty{text-align:center;padding:20px 5px;color:var(--muted);font-size:13px}
+.progress-track{height:7px;background:#2b2237;border-radius:10px;overflow:hidden;margin:13px 0 8px}
+.progress-fill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#8b5cf6,#c4b5fd);transition:width .3s}
+.progress-label{font-size:11px;color:var(--muted)}
+.timer{text-align:center;padding:4px 0}
+.timer-ring{width:165px;height:165px;border-radius:50%;margin:17px auto;display:grid;place-items:center;background:conic-gradient(var(--purple) var(--angle,0deg),#30243f 0deg);position:relative}
+.timer-ring:before{content:"";position:absolute;inset:8px;border-radius:50%;background:#151020;border:1px solid var(--line)}
+#timerDisplay{z-index:1;font-size:36px;font-weight:750;font-variant-numeric:tabular-nums}
+.timer-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.timer-settings{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0}
+.timer-settings select{width:auto}
+.grid-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.small-stat{padding:12px;border:1px solid var(--line);border-radius:10px;background:#100d1a}
+.small-stat strong{display:block;font-size:22px;color:var(--bright)}
+.chart{height:110px;display:flex;align-items:end;gap:10px;padding:10px 0 0}
+.bar-col{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:5px;min-width:0}
+.bar{width:min(28px,80%);min-height:3px;border-radius:5px 5px 2px 2px;background:linear-gradient(#c4b5fd,#8053db)}
+.bar-label,.bar-value{font-size:10px;color:var(--muted)}
+.bar-value{font-size:9px}
+.mission{border-left:3px solid var(--purple);padding:8px 12px;background:#1a1227;border-radius:0 9px 9px 0}
+.inline-form{display:flex;gap:8px;align-items:center}
+.inline-form input{max-width:100px}
+.footer{text-align:center;color:#70667e;font-size:10px;margin:25px 0;letter-spacing:1px}
+.hidden{display:none!important}
+#gameArena{background:#0b0913;border:1px solid var(--line);border-radius:14px;padding:24px 12px;text-align:center;min-height:150px;display:grid;place-items:center;gap:12px}
+#gameSignal{font-size:36px;color:var(--purple)}
+#signalToast{position:fixed;bottom:20px;right:20px;z-index:1000;max-width:calc(100vw - 40px);padding:13px 18px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);box-shadow:0 8px 35px #0008;display:none}
+body[data-theme="ocean"]{--bg:#06111a;--panel:#0d1e2b;--panel2:#132b3b;--line:#244457;--purple:#67d5e8;--bright:#a3f0fa}
+body[data-theme="ember"]{--bg:#160c0a;--panel:#261612;--panel2:#352019;--line:#52352a;--purple:#ffae72;--bright:#ffd0a9}
+@media(max-width:950px){.layout{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line);padding:13px 17px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}aside>.eyebrow,.nav-label,.side-card{display:none}.logo{margin:0}.nav-item{display:inline-block;width:auto;margin:0;padding:8px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){main{padding-top:20px}.columns{grid-template-columns:1fr}.stats{gap:9px}.card{padding:15px}.controls{grid-template-columns:1fr}form{flex-wrap:wrap}form .primary{width:100%}h1{letter-spacing:-1px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
-
-<body>
-  <div class="layout">
-    <aside>
-      <div class="logo">SIG<span>N</span>AL.</div>
-      <p class="eyebrow">Personal command center</p>
-
-      <p class="nav-label">WORKSPACE</p>
-      <button class="nav-item active" data-target="overview">◈ &nbsp; Overview</button>
-      <button class="nav-item" data-target="priorities">◎ &nbsp; Priorities</button>
-      <button class="nav-item" data-target="focus">◷ &nbsp; Focus mode</button>
-
-      <div class="side-card">
-        <p class="eyebrow">DAILY DIRECTIVE</p>
-        <strong>Progress over perfection.</strong>
-        <p class="muted">One focused step at a time.</p>
-      </div>
-    </aside>
-
-    <main id="overview">
-      <header class="topbar">
-        <span class="online"><span class="dot"></span> ALL SYSTEMS OPERATIONAL</span>
-        <time id="clock">--:--:--</time>
-      </header>
-
-      <section class="hero">
-        <div>
-          <p class="eyebrow">YOUR PERSONAL DASHBOARD / 001</p>
-          <h1>Own your <span>direction.</span></h1>
-          <p class="muted">Less noise. Clear priorities. Meaningful progress. Welcome to your personal command center.</p>
-        </div>
-        <div class="date-chip" id="today">Loading date...</div>
-      </section>
-
-      <section class="stats">
-        <article class="card">
-          <span class="stat-icon">◎</span>
-          <p class="muted">Total priorities</p>
-          <div class="stat-number" id="totalTasks">0</div>
-          <span class="muted">Tasks in your system</span>
-        </article>
-
-        <article class="card">
-          <span class="stat-icon">✦</span>
-          <p class="muted">Completed</p>
-          <div class="stat-number" id="doneTasks">0</div>
-          <span class="muted">Steps forward</span>
-        </article>
-
-        <article class="card">
-          <span class="stat-icon">◷</span>
-          <p class="muted">Focus sessions</p>
-          <div class="stat-number" id="sessions">0</div>
-          <span class="muted">Sessions completed</span>
-        </article>
-      </section>
-
-      <section class="columns">
-        <article class="card" id="priorities">
-          <div class="section-head">
-            <h2>Priority scanner</h2>
-            <span class="badge">TASK MANAGER</span>
-          </div>
-          <p class="muted">Identify your next meaningful move.</p>
-
-          <form id="taskForm">
-            <input id="taskInput" maxlength="100" placeholder="What needs to get done?" required>
-            <button class="primary" type="submit">+ Add task</button>
-          </form>
-
-          <ul class="task-list" id="taskList"></ul>
-
-          <div class="progress-track">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <div class="progress-label">
-            <span>Daily completion</span>
-            <span id="progressText">0%</span>
-          </div>
-        </article>
-
-        <article class="card" id="focus">
-          <div class="section-head">
-            <h2>Focus reactor</h2>
-            <span class="badge">DEEP WORK</span>
-          </div>
-          <p class="muted">Give one task your full attention.</p>
-
-          <div class="timer">
-            <div class="timer-ring" id="timerRing">
-              <span id="timerDisplay">25:00</span>
-            </div>
-            <p class="muted" id="timerStatus">Ready when you are.</p>
-            <div class="timer-controls">
-              <button class="primary" id="startTimer">Start focus</button>
-              <button class="secondary" id="resetTimer">Reset</button>
-            </div>
-          </div>
-
-          <div class="progress-track">
-            <div class="progress-fill" id="focusFill"></div>
-          </div>
-          <div class="progress-label">
-            <span>Current session</span>
-            <span id="focusPercent">0%</span>
-          </div>
-        </article>
-      </section>
-
-      <p class="footer">SIGNAL v2.0 &nbsp; • &nbsp; BUILT FOR PROGRESS</p>
-    </main>
-  </div>
-
-  <script>
-    const $ = (selector) => document.querySelector(selector);
-
-    let tasks = [];
-    let sessions = 0;
-    let remaining = 25 * 60;
-    let timerId = null;
-    let endTime = null;
-    const duration = 25 * 60;
-
-    try {
-      tasks = JSON.parse(localStorage.getItem("signal-tasks")) || [];
-      sessions = Number(localStorage.getItem("signal-sessions")) || 0;
-    } catch {
-      tasks = [];
-      sessions = 0;
-    }
-
-    function saveData() {
-      try {
-        localStorage.setItem("signal-tasks", JSON.stringify(tasks));
-        localStorage.setItem("signal-sessions", String(sessions));
-      } catch {
-        $("#timerStatus").textContent = "Browser storage unavailable; changes may not persist.";
-      }
-    }
-
-    function updateClock() {
-      const now = new Date();
-      $("#clock").textContent = now.toLocaleTimeString([], {
-        hour: "2-digit", minute: "2-digit", second: "2-digit"
-      });
-      $("#today").textContent = now.toLocaleDateString([], {
-        weekday: "short", day: "numeric", month: "short", year: "numeric"
-      });
-    }
-
-    function renderTasks() {
-      const list = $("#taskList");
-      list.replaceChildren();
-
-      if (tasks.length === 0) {
-        const empty = document.createElement("li");
-        empty.className = "empty";
-        empty.textContent = "No priorities yet. Add your first task above.";
-        list.appendChild(empty);
-      }
-
-      tasks.forEach((task) => {
-        const item = document.createElement("li");
-        item.className = "task" + (task.done ? " done" : "");
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = task.done;
-        checkbox.setAttribute("aria-label", "Complete " + task.name);
-        checkbox.addEventListener("change", () => {
-          task.done = checkbox.checked;
-          saveData();
-          renderTasks();
-        });
-
-        const name = document.createElement("span");
-        name.className = "task-name";
-        name.textContent = task.name;
-
-        const remove = document.createElement("button");
-        remove.className = "delete";
-        remove.textContent = "✕";
-        remove.setAttribute("aria-label", "Delete " + task.name);
-        remove.addEventListener("click", () => {
-          tasks = tasks.filter((entry) => entry.id !== task.id);
-          saveData();
-          renderTasks();
-        });
-
-        item.append(checkbox, name, remove);
-        list.appendChild(item);
-      });
-
-      const completed = tasks.filter((task) => task.done).length;
-      const percent = tasks.length ? Math.round(completed / tasks.length * 100) : 0;
-
-      $("#totalTasks").textContent = tasks.length;
-      $("#doneTasks").textContent = completed;
-      $("#sessions").textContent = sessions;
-      $("#progressFill").style.width = percent + "%";
-      $("#progressText").textContent = percent + "%";
-    }
-
-    $("#taskForm").addEventListener("submit", (event) => {
-      event.preventDefault();
-      const name = $("#taskInput").value.trim();
-      if (!name) return;
-
-      tasks.push({
-        id: Date.now() + Math.random(),
-        name,
-        done: false
-      });
-
-      $("#taskInput").value = "";
-      saveData();
-      renderTasks();
-      $("#taskInput").focus();
-    });
-
-    function updateTimer() {
-      const minutes = Math.floor(remaining / 60);
-      const seconds = remaining % 60;
-      $("#timerDisplay").textContent =
-        String(minutes).padStart(2, "0") + ":" +
-        String(seconds).padStart(2, "0");
-
-      const elapsed = duration - remaining;
-      const percent = Math.round(elapsed / duration * 100);
-      $("#focusFill").style.width = percent + "%";
-      $("#focusPercent").textContent = percent + "%";
-      $("#timerRing").style.setProperty("--angle", percent * 3.6 + "deg");
-    }
-
-    function stopTimer() {
-      if (timerId !== null) clearInterval(timerId);
-      timerId = null;
-      endTime = null;
-      $("#startTimer").textContent = "Resume focus";
-    }
-
-    $("#startTimer").addEventListener("click", () => {
-      if (timerId !== null) {
-        stopTimer();
-        $("#timerStatus").textContent = "Session paused.";
-        return;
-      }
-
-      if (remaining <= 0) remaining = duration;
-      endTime = Date.now() + remaining * 1000;
-      $("#startTimer").textContent = "Pause";
-      $("#timerStatus").textContent = "Stay focused. You've got this.";
-
-      timerId = setInterval(() => {
-        remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
-        updateTimer();
-
-        if (remaining <= 0) {
-          stopTimer();
-          sessions++;
-          saveData();
-          renderTasks();
-          $("#timerStatus").textContent = "Focus session complete. Take a short break!";
-          $("#startTimer").textContent = "Start next session";
-          updateTimer();
-        }
-      }, 250);
-    });
-
-    $("#resetTimer").addEventListener("click", () => {
-      stopTimer();
-      remaining = duration;
-      updateTimer();
-      $("#timerStatus").textContent = "Timer reset. Ready when you are.";
-      $("#startTimer").textContent = "Start focus";
-    });
-
-    document.querySelectorAll(".nav-item").forEach((button) => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".nav-item").forEach((item) => {
-          item.classList.remove("active");
-        });
-        button.classList.add("active");
-        document.getElementById(button.dataset.target).scrollIntoView({
-          behavior: "smooth", block: "start"
-        });
-      });
-    });
-
-    updateClock();
-    setInterval(updateClock, 1000);
-    renderTasks();
-    updateTimer();
-  </script>
-</body>
-</html>
+<body data-theme="purple">
+<div class="layout">
+<aside>
+<div class="logo">SIG<span>N</span>AL.</div>
+<p class="eyebrow">Personal command center</p>
+<p class="nav-label">WORKSPACE</p>
+<button class="nav-item active" data-target="overview">◈ Overview</button>
+<button class="nav-item" data-target="priorities">◎ Tasks</button>
+<button class="nav-item" data-target="focus">◷ Focus Lab</button>
+<button class="nav-item" data-target="analytics">▥ Analytics</button>
+<button class="nav-item" data-target="settings">⚙ Settings</button>
+<button class="nav-item" data-target="neonGame">🎮 Game</button>
+<div class="side-card"><p class="eyebrow">DAILY DIRECTIVE</p><strong>Progress over perfection.</strong><p class="muted">One focused step at a time.</p></div>
+</aside>
+<main id="overview">
+<header class="topbar"><span class="online"><span class="dot"></span> LOCAL SYSTEM READY</span><time id="clock">--:--:--</time></header>
+<section class="hero"><div><p class="eyebrow">YOUR PERSONAL DASHBOARD / 003</p><h1>Own your <span>direction.</span></h1><p class="muted">Less noise. Clear priorities. Meaningful progress.</p></div><div class="date-chip" id="today">Loading date...</div></section>
+<section class="stats">
+<article class="card"><span class="stat-icon">◎</span><p class="muted">All tasks</p><div class="stat-number" id="totalTasks">0</div></article>
+<article class="card"><span class="stat-icon">✦</span><p class="muted">Completed</p><div class="stat-number" id="doneTasks">0</div></article
