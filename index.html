@@ -3,129 +3,728 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#090713">
-<meta name="description" content="SIGNAL — a personal command center for tasks, focus and progress.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090714">
 <title>SIGNAL — Personal Command Center</title>
 <style>
-:root{--bg:#090713;--panel:#141020;--panel2:#1c1530;--line:#302443;--purple:#a78bfa;--bright:#c4b5fd;--muted:#a39ab6;--text:#f5f0ff;--green:#7ee7bc;--red:#ff91a8;--gold:#f6ce79}
+:root {
+  --bg:#090714;--panel:#141126;--panel2:#1c1833;
+  --text:#f4f0ff;--muted:#aaa2c5;--accent:#b78aff;
+  --cyan:#63e6ff;--green:#77f2b0;--red:#ff7898;
+  --border:#302849;--radius:18px;
+}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 75% 0%,#291747,transparent 38%),var(--bg);color:var(--text);font:15px/1.55 Inter,"Segoe UI",sans-serif;min-height:100vh}
-button,input,select{font:inherit}
+body{
+  margin:0;background:radial-gradient(ellipse at top,#211443 0%,var(--bg) 60%);
+  color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;
+  min-height:100vh
+}
+button,input,textarea,select{font:inherit}
 button{cursor:pointer}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--purple);outline-offset:3px}
-.layout{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
-aside{padding:25px 17px;border-right:1px solid var(--line);background:#0c0915e8}
-.logo{font-size:23px;font-weight:900;letter-spacing:5px;margin:5px 10px}
-.logo span{color:var(--purple)}
-.eyebrow{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase}
-aside>.eyebrow{margin:0 10px 30px}
-.nav-label{margin:25px 10px 9px;color:#776d8c;font-size:10px;letter-spacing:2px}
-.nav-item{display:block;width:100%;text-align:left;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:10px;padding:11px;margin:4px 0}
-.nav-item.active,.nav-item:hover{background:var(--panel2);border-color:#403055;color:white}
-.side-card{margin-top:35px;border:1px solid var(--line);border-radius:14px;padding:15px;background:linear-gradient(145deg,#211532,#100d1b)}
-.side-card strong{color:var(--bright)}
-main{padding:30px clamp(15px,4vw,48px);max-width:1500px;width:100%;margin:auto}
-.topbar,.hero,.section-head,.progress-label{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.topbar{margin-bottom:30px}
-.online{color:var(--green);font-size:11px}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px}
-#clock{font:600 13px ui-monospace,monospace;color:var(--bright)}
-.hero{align-items:end;margin-bottom:28px}
-h1{font-size:clamp(34px,5vw,56px);line-height:1.08;letter-spacing:-2px;margin:10px 0}
-h1 span{color:var(--purple);text-shadow:0 0 35px #a78bfa35}
-h2{font-size:17px;margin:0}
-h3{font-size:14px;margin:0 0 8px}
-p{margin-top:8px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--cyan);outline-offset:3px
+}
+.app{max-width:1250px;margin:auto;padding:24px}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.logo{font-size:1.65rem;font-weight:900;letter-spacing:4px}
+.logo span{color:var(--accent)}
+.small{font-size:.85rem;color:var(--muted)}
+.pill{padding:9px 13px;border:1px solid var(--border);border-radius:999px;color:var(--cyan)}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0}
+nav button,.btn{
+  background:var(--panel2);border:1px solid var(--border);
+  color:var(--text);padding:10px 14px;border-radius:11px
+}
+nav button.active,.btn.primary{background:var(--accent);color:#160d29;border-color:transparent;font-weight:800}
+button:hover{filter:brightness(1.13)}
+.hero{
+  padding:28px;border:1px solid var(--border);border-radius:24px;
+  background:linear-gradient(120deg,#21183d,#121025 70%);
+  margin-bottom:20px
+}
+h1{font-size:clamp(1.8rem,5vw,3rem);margin:10px 0}
+h2{font-size:1.15rem;margin-top:0}
+h3{font-size:1rem}
+p{line-height:1.55}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.card{
+  grid-column:span 6;background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;min-width:0
+}
+.card.full{grid-column:1/-1}
+.card.third{grid-column:span 4}
+.metric{font-size:2rem;font-weight:850;color:var(--cyan);margin:8px 0}
 .muted{color:var(--muted)}
-.date-chip,.badge{border:1px solid var(--line);background:var(--panel);padding:9px 12px;border-radius:10px;color:var(--bright);font-size:11px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}
-.card{background:linear-gradient(145deg,#191328,#100d1a);border:1px solid var(--line);border-radius:16px;padding:19px;min-width:0;box-shadow:0 12px 35px #00000013;transition:border-color .2s}
-.card:hover{border-color:#72539c}
-.stat-number{font-size:30px;font-weight:750;letter-spacing:-1px;margin:8px 0 0}
-.stat-icon{color:var(--purple);font-size:19px}
-.columns{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.8fr);gap:17px;align-items:start}
-.stack{display:grid;gap:17px}
-.section-head{margin-bottom:13px}
-.badge{font-size:9px;letter-spacing:1px;padding:5px 8px}
-form{display:flex;gap:8px}
-input,select{width:100%;min-width:0;color:var(--text);background:#0b0913;border:1px solid #3b2e4e;border-radius:9px;padding:11px;outline:none}
-input:focus,select:focus{border-color:var(--purple)}
-input[type=checkbox]{width:17px;height:17px;accent-color:var(--purple)}
-.primary,.secondary,.danger{border-radius:9px;padding:10px 13px;white-space:nowrap}
-.primary{color:#130c20;font-weight:750;background:linear-gradient(135deg,#c4b5fd,#9570ef);border:0}
-.secondary{color:var(--bright);background:#261b36;border:1px solid #49355e}
-.danger{color:var(--red);background:#301724;border:1px solid #573044}
-button:hover{filter:brightness(1.12)}
-.controls{display:grid;grid-template-columns:1fr 150px;gap:8px;margin:12px 0}
-.filters{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.filters select{width:auto;flex:1;min-width:110px;padding:8px}
-.task-list{list-style:none;padding:0;margin:12px 0}
-.task{padding:13px 0;border-bottom:1px solid #292034}
-.task:last-child{border-bottom:0}
-.task-top{display:flex;align-items:flex-start;gap:10px}
-.task-top input{margin-top:4px}
-.task-body{flex:1;min-width:0}
-.task-name{overflow-wrap:anywhere;font-weight:550}
-.task.done .task-name{text-decoration:line-through;color:#81778f}
-.task-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px;font-size:10px;color:var(--muted)}
-.priority{border-radius:5px;padding:2px 6px;background:#302143;color:var(--bright)}
-.priority.High{color:var(--red);background:#381a2a}
-.priority.Medium{color:var(--gold);background:#382c18}
-.priority.Low{color:var(--green);background:#143025}
-.task-actions{display:flex;gap:5px}
-.mini{border:1px solid var(--line);background:#20172d;color:var(--muted);border-radius:6px;padding:5px 8px;font-size:11px}
-.empty{text-align:center;padding:20px 5px;color:var(--muted);font-size:13px}
-.progress-track{height:7px;background:#2b2237;border-radius:10px;overflow:hidden;margin:13px 0 8px}
-.progress-fill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#8b5cf6,#c4b5fd);transition:width .3s}
-.progress-label{font-size:11px;color:var(--muted)}
-.timer{text-align:center;padding:4px 0}
-.timer-ring{width:165px;height:165px;border-radius:50%;margin:17px auto;display:grid;place-items:center;background:conic-gradient(var(--purple) var(--angle,0deg),#30243f 0deg);position:relative}
-.timer-ring:before{content:"";position:absolute;inset:8px;border-radius:50%;background:#151020;border:1px solid var(--line)}
-#timerDisplay{z-index:1;font-size:36px;font-weight:750;font-variant-numeric:tabular-nums}
-.timer-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.timer-settings{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0}
-.timer-settings select{width:auto}
-.grid-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.small-stat{padding:12px;border:1px solid var(--line);border-radius:10px;background:#100d1a}
-.small-stat strong{display:block;font-size:22px;color:var(--bright)}
-.chart{height:110px;display:flex;align-items:end;gap:10px;padding:10px 0 0}
-.bar-col{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:5px;min-width:0}
-.bar{width:min(28px,80%);min-height:3px;border-radius:5px 5px 2px 2px;background:linear-gradient(#c4b5fd,#8053db)}
-.bar-label,.bar-value{font-size:10px;color:var(--muted)}
-.bar-value{font-size:9px}
-.mission{border-left:3px solid var(--purple);padding:8px 12px;background:#1a1227;border-radius:0 9px 9px 0}
-.inline-form{display:flex;gap:8px;align-items:center}
-.inline-form input{max-width:100px}
-.footer{text-align:center;color:#70667e;font-size:10px;margin:25px 0;letter-spacing:1px}
-.hidden{display:none!important}
-#gameArena{background:#0b0913;border:1px solid var(--line);border-radius:14px;padding:24px 12px;text-align:center;min-height:150px;display:grid;place-items:center;gap:12px}
-#gameSignal{font-size:36px;color:var(--purple)}
-#signalToast{position:fixed;bottom:20px;right:20px;z-index:1000;max-width:calc(100vw - 40px);padding:13px 18px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text);box-shadow:0 8px 35px #0008;display:none}
-body[data-theme="ocean"]{--bg:#06111a;--panel:#0d1e2b;--panel2:#132b3b;--line:#244457;--purple:#67d5e8;--bright:#a3f0fa}
-body[data-theme="ember"]{--bg:#160c0a;--panel:#261612;--panel2:#352019;--line:#52352a;--purple:#ffae72;--bright:#ffd0a9}
-@media(max-width:950px){.layout{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line);padding:13px 17px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}aside>.eyebrow,.nav-label,.side-card{display:none}.logo{margin:0}.nav-item{display:inline-block;width:auto;margin:0;padding:8px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:650px){main{padding-top:20px}.columns{grid-template-columns:1fr}.stats{gap:9px}.card{padding:15px}.controls{grid-template-columns:1fr}form{flex-wrap:wrap}form .primary{width:100%}h1{letter-spacing:-1px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+input,textarea,select{
+  background:#0c0a18;color:var(--text);border:1px solid var(--border);
+  border-radius:10px;padding:11px;width:100%;min-width:0
+}
+textarea{resize:vertical;min-height:90px}
+form{display:flex;gap:8px;flex-wrap:wrap}
+form input{flex:1}
+form button{white-space:nowrap}
+.task-list{display:grid;gap:9px;margin-top:14px}
+.task{
+  display:flex;align-items:center;gap:10px;padding:12px;
+  border:1px solid var(--border);border-radius:12px;background:#100d20
+}
+.task span{flex:1;overflow-wrap:anywhere}
+.task.done span{text-decoration:line-through;color:var(--muted)}
+.task input{width:auto}
+.task button{background:transparent;color:var(--red);border:0}
+.progress{height:8px;background:#29223c;border-radius:99px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));width:0%;transition:width .3s}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{padding:13px;background:#100d20;border-radius:12px}
+.stat strong{display:block;font-size:1.4rem;margin-top:5px}
+#timer{font-size:3.4rem;font-weight:900;text-align:center;margin:18px 0;font-variant-numeric:tabular-nums}
+.center{text-align:center}
+#missionSteps{display:grid;gap:10px;margin-top:14px}
+.step{padding:13px;background:#100d20;border:1px solid var(--border);border-radius:12px}
+.step label{display:flex;gap:10px;align-items:flex-start}
+.step input{width:auto;margin-top:4px}
+.skills{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.skill{padding:13px;border:1px solid var(--border);border-radius:12px}
+.skill.locked{opacity:.48}
+.heatmap{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-top:15px}
+.heat{aspect-ratio:1;border-radius:5px;background:#29223c;position:relative}
+.heat[data-level="1"]{background:#4c3675}
+.heat[data-level="2"]{background:#7650b0}
+.heat[data-level="3"]{background:#a77ce8}
+.heat[data-level="4"]{background:#63e6ff}
+footer{text-align:center;padding:30px 10px;color:var(--muted);font-size:.8rem}
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--cyan);color:#080b17;padding:12px 18px;
+  border-radius:12px;font-weight:800;display:none;z-index:10
+}
+[hidden]{display:none!important}
+@media(max-width:750px){
+  .app{padding:15px}.card,.card.third{grid-column:1/-1}
+  .stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .stat{padding:9px}.metric{font-size:1.7rem}
+}
 </style>
 </head>
-<body data-theme="purple">
-<div class="layout">
-<aside>
-<div class="logo">SIG<span>N</span>AL.</div>
-<p class="eyebrow">Personal command center</p>
-<p class="nav-label">WORKSPACE</p>
-<button class="nav-item active" data-target="overview">◈ Overview</button>
-<button class="nav-item" data-target="priorities">◎ Tasks</button>
-<button class="nav-item" data-target="focus">◷ Focus Lab</button>
-<button class="nav-item" data-target="analytics">▥ Analytics</button>
-<button class="nav-item" data-target="settings">⚙ Settings</button>
-<button class="nav-item" data-target="neonGame">🎮 Game</button>
-<div class="side-card"><p class="eyebrow">DAILY DIRECTIVE</p><strong>Progress over perfection.</strong><p class="muted">One focused step at a time.</p></div>
-</aside>
-<main id="overview">
-<header class="topbar"><span class="online"><span class="dot"></span> LOCAL SYSTEM READY</span><time id="clock">--:--:--</time></header>
-<section class="hero"><div><p class="eyebrow">YOUR PERSONAL DASHBOARD / 003</p><h1>Own your <span>direction.</span></h1><p class="muted">Less noise. Clear priorities. Meaningful progress.</p></div><div class="date-chip" id="today">Loading date...</div></section>
-<section class="stats">
-<article class="card"><span class="stat-icon">◎</span><p class="muted">All tasks</p><div class="stat-number" id="totalTasks">0</div></article>
-<article class="card"><span class="stat-icon">✦</span><p class="muted">Completed</p><div class="stat-number" id="doneTasks">0</div></article
+<body>
+<div class="app">
+<header>
+  <div>
+    <div class="logo">SIG<span>N</span>AL<span>.</span></div>
+    <div class="small">PERSONAL COMMAND CENTER / OFFLINE MODE</div>
+  </div>
+  <div class="pill" id="clock">Loading time...</div>
+</header>
+
+<nav>
+  <button class="active" data-view="dashboard">Dashboard</button>
+  <button data-view="missions">Mission Control</button>
+  <button data-view="skills">Skill Tree</button>
+  <button data-view="insights">Insights</button>
+  <button data-view="arena">Challenge Arena</button>
+</nav>
+
+<section id="dashboard" class="view">
+  <div class="hero">
+    <div class="small">YOUR SPACE. YOUR SYSTEM. YOUR PROGRESS.</div>
+    <h1>Make your next move count.</h1>
+    <p class="muted">Turn ideas into action. Build skills. Track real progress.</p>
+    <div class="row">
+      <span class="pill" id="levelBadge">LEVEL 1</span>
+      <span class="pill" id="xpBadge">0 XP</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Today's Tasks</h2>
+      <form id="taskForm">
+        <input id="taskInput" maxlength="120" placeholder="What needs doing?" required>
+        <button class="btn primary">Add task</button>
+      </form>
+      <div id="taskList" class="task-list"></div>
+      <p class="small" id="taskSummary">No tasks yet. Add your first one.</p>
+    </div>
+
+    <div class="card">
+      <h2>Focus Station</h2>
+      <p class="muted">One task. One session. Full attention.</p>
+      <div id="timer">25:00</div>
+      <div class="row" style="justify-content:center">
+        <button class="btn primary" id="startTimer">Start focus</button>
+        <button class="btn" id="pauseTimer">Pause</button>
+        <button class="btn" id="resetTimer">Reset</button>
+      </div>
+      <div class="progress"><div id="timerProgress"></div></div>
+      <p class="small center" id="timerStatus">Ready when you are.</p>
+    </div>
+
+    <div class="card full">
+      <h2>Performance Overview</h2>
+      <div class="stat-grid">
+        <div class="stat"><span class="small">Tasks completed</span><strong id="doneMetric">0</strong></div>
+        <div class="stat"><span class="small">Focus sessions</span><strong id="sessionMetric">0</strong></div>
+        <div class="stat"><span class="small">Focus minutes</span><strong id="minuteMetric">0</strong></div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <h2>Offline Smart Assistant</h2>
+      <p class="muted">No API key or internet needed. Describe a goal and SIGNAL will suggest a practical starting plan using built-in rules.</p>
+      <form id="quickMissionForm">
+        <input id="quickGoal" maxlength="180" placeholder="e.g. Learn Python or finish my project" required>
+        <button class="btn primary">Build a plan</button>
+      </form>
+      <div id="quickPlan" class="task-list"></div>
+    </div>
+  </div>
+</section>
+
+<section id="missions" class="view" hidden>
+  <div class="hero">
+    <div class="small">PLAN / BREAK DOWN / EXECUTE</div>
+    <h1>Mission Control</h1>
+    <p class="muted">Big goals become manageable when you define the next action.</p>
+  </div>
+  <div class="grid">
+    <div class="card full">
+      <h2>Create a mission</h2>
+      <form id="missionForm">
+        <input id="missionGoal" maxlength="180" placeholder="What do you want to accomplish?" required>
+        <button class="btn primary">Generate steps</button>
+      </form>
+      <div id="missionSteps"></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="view" hidden>
+  <div class="hero">
+    <div class="small">EVERY ACTION BUILDS EXPERIENCE</div>
+    <h1>Your Skill Tree</h1>
+    <p class="muted">Complete tasks and focus sessions to unlock milestones.</p>
+    <div class="metric" id="skillXP">0 XP</div>
+    <div class="progress"><div id="skillProgress"></div></div>
+    <div class="small" id="nextLevelText">Keep going to reach your next level.</div>
+  </div>
+  <div class="grid"><div class="card full"><div id="skillList" class="skills"></div></div></div>
+</section>
+
+<section id="insights" class="view" hidden>
+  <div class="hero">
+    <div class="small">NOTICE YOUR PATTERNS</div>
+    <h1>Progress Intelligence</h1>
+    <p class="muted">A local record of focus sessions and daily reflections.</p>
+  </div>
+  <div class="grid">
+    <div class="card full">
+      <h2>Last 28 days</h2>
+      <div class="small">Brighter squares represent more focus minutes recorded that day.</div>
+      <div id="heatmap" class="heatmap"></div>
+    </div>
+    <div class="card full">
+      <h2>Daily reflection</h2>
+      <p class="muted">What went well? What will you try next?</p>
+      <textarea id="reflection" maxlength="1000" placeholder="Write a few honest lines about today..."></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="saveReflection">Save reflection</button>
+        <span class="small" id="reflectionStatus"></span>
+      </div>
+      <h3>Recent reflections</h3>
+      <div id="reflectionHistory" class="task-list"></div>
+    </div>
+    <div class="card full">
+      <h2>Export your data</h2>
+      <p class="muted">Download a JSON backup of your tasks, progress, and reflections.</p>
+      <div class="row">
+        <button class="btn primary" id="exportData">Export backup</button>
+        <label class="btn" for="importFile">Import backup</label>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="arena" class="view" hidden>
+  <div class="hero">
+    <div class="small">REACTION / ATTENTION / CONSISTENCY</div>
+    <h1>Daily Challenge Arena</h1>
+    <p class="muted">Wait for the signal to turn green, then click as quickly as you can. Click too early and you must restart.</p>
+  </div>
+  <div class="grid">
+    <div class="card full center">
+      <div class="pill" id="arenaDate">DAILY CHALLENGE</div>
+      <h2 style="margin-top:20px">Neon Reflex</h2>
+      <div id="reactionBox" style="margin:20px 0;padding:50px 12px;border-radius:18px;background:#29223c;font-size:1.3rem;font-weight:900">
+        READY?
+      </div>
+      <button class="btn primary" id="reactionButton">Start challenge</button>
+      <p id="reactionResult" class="muted">Your daily result will appear here.</p>
+      <div class="stat-grid" style="margin-top:20px">
+        <div class="stat"><span class="small">Today's result</span><strong id="todayScore">—</strong></div>
+        <div class="stat"><span class="small">Personal best</span><strong id="bestScore">—</strong></div>
+        <div class="stat"><span class="small">Attempts today</span><strong id="attempts">0</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>SIGNAL 4.0 · OFFLINE INTELLIGENCE · BUILT FOR PROGRESS</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ---------- Local data ---------- */
+const KEY = "signal-command-center-v4";
+const EXTRA = "signal-extra-v4";
+
+function dayKey(date = new Date()) {
+  return date.getFullYear() + "-" +
+    String(date.getMonth()+1).padStart(2,"0") + "-" +
+    String(date.getDate()).padStart(2,"0");
+}
+function load(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key));
+    return value ?? fallback;
+  } catch { return fallback; }
+}
+let data = load(KEY, {
+  tasks:[], xp:0, sessions:0, focusMinutes:0,
+  history:{}, reflections:{}, challenge:{}
+});
+let extra = load(EXTRA, {});
+data.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+data.history = data.history || {};
+data.reflections = data.reflections || {};
+data.challenge = data.challenge || {};
+
+function save() {
+  localStorage.setItem(KEY, JSON.stringify(data));
+  localStorage.setItem(EXTRA, JSON.stringify(extra));
+}
+function toast(message) {
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.style.display = "block";
+  clearTimeout(toast.timeout);
+  toast.timeout = setTimeout(() => el.style.display="none", 2200);
+}
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+function level() { return Math.floor(data.xp / 100) + 1; }
+
+/* ---------- Navigation ---------- */
+document.querySelectorAll("nav button").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+    document.querySelectorAll(".view").forEach(view => view.hidden = true);
+    document.getElementById(button.dataset.view).hidden = false;
+    renderAll();
+  });
+});
+
+/* ---------- Tasks ---------- */
+document.getElementById("taskForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const input = document.getElementById("taskInput");
+  const title = input.value.trim();
+  if (!title) return;
+  data.tasks.unshift({
+    id:Date.now()+Math.random(), title, done:false, created:dayKey()
+  });
+  input.value = "";
+  save(); renderAll(); toast("Task added.");
+});
+
+function addTask(title) {
+  title = String(title).trim();
+  if (!title) return;
+  data.tasks.unshift({
+    id:Date.now()+Math.random(), title, done:false, created:dayKey()
+  });
+  save(); renderAll(); toast("Mission step added to tasks.");
+}
+function toggleTask(id) {
+  const task = data.tasks.find(t => t.id === id);
+  if (!task) return;
+  task.done = !task.done;
+  if (task.done) {
+    data.xp += 10;
+    toast("+10 XP — task completed!");
+  }
+  save(); renderAll();
+}
+function deleteTask(id) {
+  data.tasks = data.tasks.filter(t => t.id !== id);
+  save(); renderAll(); toast("Task removed.");
+}
+function renderTasks() {
+  const list = document.getElementById("taskList");
+  list.innerHTML = "";
+  data.tasks.forEach(task => {
+    const item = document.createElement("div");
+    item.className = "task" + (task.done ? " done" : "");
+    item.innerHTML = `
+      <input type="checkbox" aria-label="Complete task" ${task.done ? "checked" : ""}>
+      <span>${escapeHTML(task.title)}</span>
+      <button aria-label="Delete task" title="Delete task">✕</button>`;
+    item.querySelector("input").addEventListener("change", () => toggleTask(task.id));
+    item.querySelector("button").addEventListener("click", () => deleteTask(task.id));
+    list.appendChild(item);
+  });
+  const done = data.tasks.filter(t => t.done).length;
+  document.getElementById("taskSummary").textContent =
+    `${done} of ${data.tasks.length} tasks completed`;
+}
+
+/* ---------- Focus timer ---------- */
+let timerSeconds = 25 * 60;
+let timerInterval = null;
+let timerStarted = 25 * 60;
+
+function paintTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  document.getElementById("timer").textContent =
+    `${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
+  document.getElementById("timerProgress").style.width =
+    `${100 * (1 - timerSeconds / timerStarted)}%`;
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+document.getElementById("startTimer").addEventListener("click", () => {
+  if (timerInterval) return;
+  document.getElementById("timerStatus").textContent = "Focus in progress...";
+  timerInterval = setInterval(() => {
+    if (timerSeconds > 0) {
+      timerSeconds--;
+      paintTimer();
+    } else {
+      stopTimer();
+      data.sessions++;
+      data.focusMinutes += Math.round(timerStarted / 60);
+      data.xp += 20;
+      data.history[dayKey()] = (data.history[dayKey()] || 0) +
+        Math.round(timerStarted / 60);
+      save(); renderAll();
+      document.getElementById("timerStatus").textContent =
+        "Session complete! Take a short break.";
+      toast("Focus session complete! +20 XP");
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("SIGNAL", {body:"Focus session complete. Nice work!"});
+      }
+    }
+  }, 1000);
+});
+document.getElementById("pauseTimer").addEventListener("click", () => {
+  stopTimer();
+  document.getElementById("timerStatus").textContent = "Paused.";
+});
+document.getElementById("resetTimer").addEventListener("click", () => {
+  stopTimer();
+  timerSeconds = 25 * 60;
+  timerStarted = timerSeconds;
+  paintTimer();
+  document.getElementById("timerStatus").textContent = "Ready when you are.";
+});
+paintTimer();
+
+/* ---------- Offline smart mission logic ---------- */
+function buildMission(goal) {
+  const g = goal.toLowerCase();
+  let steps = [
+    "Define what success looks like for: " + goal,
+    "Break the goal into three small, manageable actions.",
+    "Complete the easiest useful action first.",
+    "Review what worked and decide the next step."
+  ];
+
+  if (/python|javascript|coding|program|website|app|software|html|css/.test(g)) {
+    steps = [
+      "Write down the exact feature or concept you want to learn.",
+      "Study one small example and identify what each part does.",
+      "Build a tiny version yourself without copying blindly.",
+      "Test it, find one bug or improvement, and fix it.",
+      "Save your progress and write down what you learned."
+    ];
+  } else if (/study|exam|quiz|school|math|physics|chemistry/.test(g)) {
+    steps = [
+      "List the exact topic and what you need to understand.",
+      "Review notes or one worked example for 10 minutes.",
+      "Attempt three practice questions without looking at answers.",
+      "Check mistakes and explain the correct method in your own words.",
+      "Schedule a short review to strengthen your memory."
+    ];
+  } else if (/project|hackathon|competition|build|launch|ship/.test(g)) {
+    steps = [
+      "Describe the problem your project solves in one sentence.",
+      "Choose the smallest useful version you can finish.",
+      "Build the core feature before adding extras.",
+      "Test it with a realistic example and fix the biggest issue.",
+      "Publish or present it, then record what you would improve."
+    ];
+  } else if (/fitness|sport|football|soccer|martial|training/.test(g)) {
+    steps = [
+      "Choose one safe, specific goal for this session.",
+      "Prepare your space and do an appropriate warm-up.",
+      "Practise the main skill with good technique.",
+      "Take breaks as needed and note one improvement.",
+      "Review your progress and plan your next session."
+    ];
+  } else if (/money|business|income|earn|startup/.test(g)) {
+    steps = [
+      "Define the problem you could solve for someone.",
+      "Identify who needs the solution and what they currently use.",
+      "Design a small, low-cost way to test your idea.",
+      "Ask for feedback and improve based on what you learn.",
+      "Write down the next practical step and any costs involved."
+    ];
+  }
+
+  return steps;
+}
+function showMission(goal, target) {
+  const steps = buildMission(goal);
+  target.innerHTML = "";
+  steps.forEach((step, index) => {
+    const el = document.createElement("div");
+    el.className = "step";
+    el.innerHTML = `
+      <label>
+        <input type="checkbox" aria-label="Mark step complete">
+        <span><strong>Step ${index+1}</strong><br>${escapeHTML(step)}</span>
+      </label>
+      <button class="btn" style="margin:10px 0 0 28px">Add as task</button>`;
+    el.querySelector("button").addEventListener("click", () => addTask(step));
+    el.querySelector("input").addEventListener("change", event => {
+      if (event.target.checked) {
+        data.xp += 2; save(); renderAll(); toast("+2 XP for planning.");
+      }
+    });
+    target.appendChild(el);
+  });
+}
+document.getElementById("missionForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const goal = document.getElementById("missionGoal").value.trim();
+  if (!goal) return;
+  showMission(goal, document.getElementById("missionSteps"));
+  toast("Mission plan generated offline.");
+});
+document.getElementById("quickMissionForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const goal = document.getElementById("quickGoal").value.trim();
+  if (!goal) return;
+  showMission(goal, document.getElementById("quickPlan"));
+});
+
+/* ---------- Skill tree ---------- */
+function renderSkills() {
+  const done = data.tasks.filter(t => t.done).length;
+  const skills = [
+    ["First Signal","Complete your first task",done >= 1],
+    ["Momentum Builder","Complete 5 tasks",done >= 5],
+    ["Task Commander","Complete 20 tasks",done >= 20],
+    ["Deep Focus","Finish a focus session",data.sessions >= 1],
+    ["Focus Regular","Finish 5 focus sessions",data.sessions >= 5],
+    ["Time Investor","Record 120 focus minutes",data.focusMinutes >= 120],
+    ["XP Explorer","Reach 100 XP",data.xp >= 100],
+    ["Mission Maker","Earn 250 XP",data.xp >= 250]
+  ];
+  document.getElementById("skillList").innerHTML = skills.map(s => `
+    <div class="skill ${s[2] ? "" : "locked"}">
+      <strong>${s[2] ? "✦" : "◇"} ${escapeHTML(s[0])}</strong>
+      <div class="small" style="margin-top:6px">${escapeHTML(s[1])}</div>
+      <div class="small" style="margin-top:8px">${s[2] ? "UNLOCKED" : "LOCKED"}</div>
+    </div>`).join("");
+  document.getElementById("skillXP").textContent = data.xp + " XP";
+  document.getElementById("skillProgress").style.width = (data.xp % 100) + "%";
+  document.getElementById("nextLevelText").textContent =
+    `${100 - data.xp % 100} XP until the next level`;
+}
+
+/* ---------- Activity heatmap and reflections ---------- */
+function renderHeatmap() {
+  const map = document.getElementById("heatmap");
+  map.innerHTML = "";
+  for (let i = 27; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const key = dayKey(date);
+    const minutes = Number(data.history[key] || 0);
+    const level = minutes === 0 ? 0 : minutes < 15 ? 1 : minutes < 30 ? 2 : minutes < 60 ? 3 : 4;
+    const cell = document.createElement("div");
+    cell.className = "heat";
+    cell.dataset.level = level;
+    cell.title = `${key}: ${minutes} focus minutes`;
+    cell.setAttribute("aria-label", cell.title);
+    map.appendChild(cell);
+  }
+}
+function renderReflections() {
+  const today = dayKey();
+  document.getElementById("reflection").value = data.reflections[today] || "";
+  const history = document.getElementById("reflectionHistory");
+  const entries = Object.entries(data.reflections).sort((a,b) => b[0].localeCompare(a[0])).slice(0,5);
+  history.innerHTML = entries.length ? "" : '<p class="muted">No reflections saved yet.</p>';
+  entries.forEach(([date, note]) => {
+    const item = document.createElement("div");
+    item.className = "step";
+    item.innerHTML = `<strong>${escapeHTML(date)}</strong><p>${escapeHTML(note)}</p>`;
+    history.appendChild(item);
+  });
+}
+document.getElementById("saveReflection").addEventListener("click", () => {
+  data.reflections[dayKey()] = document.getElementById("reflection").value.trim();
+  save(); renderReflections();
+  document.getElementById("reflectionStatus").textContent = "Saved on this device.";
+  toast("Reflection saved.");
+});
+
+/* ---------- Daily reaction challenge ---------- */
+let reactionState = "idle";
+let reactionTimeout = null;
+let readyAt = 0;
+
+function challengeData() {
+  const today = dayKey();
+  if (!data.challenge[today]) {
+    data.challenge[today] = {best:null, score:null, attempts:0};
+  }
+  return data.challenge[today];
+}
+function renderChallenge() {
+  const c = challengeData();
+  document.getElementById("arenaDate").textContent = dayKey();
+  document.getElementById("todayScore").textContent = c.score == null ? "—" : c.score + " ms";
+  document.getElementById("bestScore").textContent = c.best == null ? "—" : c.best + " ms";
+  document.getElementById("attempts").textContent = c.attempts;
+}
+function resetReaction(message) {
+  clearTimeout(reactionTimeout);
+  reactionState = "idle";
+  document.getElementById("reactionBox").style.background = "#29223c";
+  document.getElementById("reactionBox").textContent = message || "READY?";
+  document.getElementById("reactionButton").textContent = "Start challenge";
+}
+document.getElementById("reactionButton").addEventListener("click", () => {
+  const box = document.getElementById("reactionBox");
+  const button = document.getElementById("reactionButton");
+  const result = document.getElementById("reactionResult");
+
+  if (reactionState === "waiting") {
+    clearTimeout(reactionTimeout);
+    reactionState = "idle";
+    box.style.background = "#ff7898";
+    box.textContent = "TOO EARLY!";
+    result.textContent = "False start. Try again when you're ready.";
+    button.textContent = "Try again";
+    return;
+  }
+  if (reactionState === "ready") {
+    const ms = Math.max(1, Math.round(performance.now() - readyAt));
+    const c = challengeData();
+    c.attempts++;
+    c.score = ms;
+    c.best = c.best == null ? ms : Math.min(c.best, ms);
+    data.xp += 5;
+    save(); renderAll();
+    result.textContent = `Your reaction time: ${ms} ms. You earned 5 XP!`;
+    box.style.background = "#63e6ff";
+    box.textContent = ms + " ms";
+    resetReaction(ms + " ms");
+    return;
+  }
+
+  reactionState = "waiting";
+  box.style.background = "#ff7898";
+  box.textContent = "WAIT FOR GREEN...";
+  button.textContent = "Wait...";
+  result.textContent = "Stay ready. Don't click yet.";
+  reactionTimeout = setTimeout(() => {
+    if (reactionState !== "waiting") return;
+    reactionState = "ready";
+    readyAt = performance.now();
+    box.style.background = "#77f2b0";
+    box.textContent = "CLICK NOW!";
+    button.textContent = "CLICK!";
+  }, 1200 + Math.random() * 2800);
+});
+document.getElementById("reactionBox").addEventListener("click", () => {
+  if (reactionState === "ready") {
+    document.getElementById("reactionButton").click();
+  } else if (reactionState === "waiting") {
+    document.getElementById("reactionButton").click();
+  }
+});
+
+/* ---------- Backup and restore ---------- */
+document.getElementById("exportData").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify({data,extra}, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "signal-backup-" + dayKey() + ".json";
+  link.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("importFile").addEventListener("change", async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const parsed = JSON.parse(await file.text());
+    const restored = parsed.data || parsed;
+    if (!Array.isArray(restored.tasks) || typeof restored.xp !== "number") {
+      throw new Error("Invalid backup");
+    }
+    if (!confirm("Replace current SIGNAL data with this backup?")) return;
+    data = restored;
+    extra = parsed.extra || {};
+    data.history = data.history || {};
+    data.reflections = data.reflections || {};
+    data.challenge = data.challenge || {};
+    save(); renderAll(); toast("Backup restored.");
+  } catch {
+    alert("Could not import this file. Please select a valid SIGNAL JSON backup.");
+  } finally {
+    event.target.value = "";
+  }
+});
+
+/* ---------- Main rendering ---------- */
+function renderAll() {
+  const done = data.tasks.filter(t => t.done).length;
+  document.getElementById("levelBadge").textContent = "LEVEL " + level();
+  document.getElementById("xpBadge").textContent = data.xp + " XP";
+  document.getElementById("doneMetric").textContent = done;
+  document.getElementById("sessionMetric").textContent = data.sessions;
+  document.getElementById("minuteMetric").textContent = data.focusMinutes;
+  renderTasks();
+  renderSkills();
+  renderHeatmap();
+  renderReflections();
+  renderChallenge();
+}
+function updateClock() {
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    now.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}) +
+    " · " + now.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
+}
+updateClock();
+setInterval(updateClock, 30000);
+renderAll();
+</script>
+</body>
+</html>
+
